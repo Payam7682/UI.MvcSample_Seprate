@@ -1,0 +1,132 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div>
+    <section class="vh-100">
+        <div class="container-fluid h-custom">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-md-9 col-lg-6 col-xl-5">
+                    <form id="myform">
+                        <span id="lblName"></span>
+                        <!-- First Name input -->
+                        <div class="form-outline mb-4">
+                            <label class="form-label" for="FirstName">First Name</label>
+                            <input type="text" id="FirstName" required class="form-control form-control-lg"
+                                   placeholder="Enter First Name" />
+
+                        </div>
+
+                        <!-- Last Name input -->
+                        <div class="form-outline mb-4">
+                            <label class="form-label" for="LastName">Last Name</label>
+                            <input type="text" id="LastName" required class="form-control form-control-lg"
+                                   placeholder="Enter Last Name" />
+                        </div>
+
+                        <div class="text-lg-start mt-4 pt-2">
+                            <button id="btnSubmit" type="button" class="btn btn-primary btn-lg"
+                                    style="padding-left: 2.5rem; padding-right: 2.5rem;" onclick="AjaxFormSubmit()">
+                                Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+                    <div id="divdatabase"></div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary">
+            <!-- Copyright -->
+            <div class="text-white mb-3 mb-md-0">
+                Copyright © 2020. All rights reserved.
+            </div>
+            <!-- Copyright -->
+            <!-- Right -->
+            <div>
+                <a href="#!" class="text-white me-4">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#!" class="text-white me-4">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#!" class="text-white me-4">
+                    <i class="fab fa-google"></i>
+                </a>
+                <a href="#!" class="text-white">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+            </div>
+            <!-- Right -->
+        </div>
+    </section>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            LoadData();
+        });
+
+        function AjaxFormSubmit() {
+
+            var IsValidForm = true;
+
+            var firstName = $("#FirstName").val();
+            var lastName = $("#LastName").val();
+
+            if (firstName == null || firstName == undefined || firstName == "") {
+                $("#FirstName").addClass('required');
+                IsValidForm = false;
+            }
+            else {
+                $("#FirstName").removeClass('required');
+            }
+
+            if (lastName == null || lastName == undefined || lastName == "") {
+                $("#LastName").addClass('required');
+                IsValidForm = false;
+            }
+            else {
+                $("#LastName").removeClass('required');
+            }
+
+            if (!IsValidForm) {
+                $("#btnSubmit").focus();
+                return false;
+            }
+
+            //Add the Field values to FormData object.
+            var formData = new FormData();
+            formData.append("firstName", firstName);
+            formData.append("lastName", lastName);
+
+            $.ajax({
+                type: 'POST',
+                url: "/home/index",
+                async: true,
+                data: formData,
+                processData: false,
+                contentType: false
+            }).done(function (response) {
+                setTimeout(function () { LoadData(); }, 1000);
+                $('#myform').trigger("reset");
+                $("#lblName").html(response.Name);
+            });
+        }
+
+        function LoadData() {
+            $.ajax({
+                type: 'GET',
+                url: "https://localhost:44332/api/dataoperation",
+                async: true,
+                processData: false,
+                contentType: false
+            }).done(function (response) {
+                $("#divdatabase").html("");
+                $("#divdatabase").html(JSON.stringify(response));
+            });
+        }
+    </script>
+</div>
